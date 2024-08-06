@@ -22,11 +22,11 @@ function placeMarker(location) {
       map: map
     });
   }
-  document.getElementById('query').value = location.lat() + ", " + location.lng();
+  document.getElementById('location').value = location.lat() + ", " + location.lng();
 }
 
 function sendQuery() {
-  var query = document.getElementById('query').value;
+  var query = document.getElementById('location').value;
   alert("Query sent: " + query);
 }
 
