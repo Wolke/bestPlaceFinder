@@ -53,6 +53,7 @@ function loadScript(url, callback) {
 // config.js
 const GOOGLE_MAPS_API_KEY = 'AIzaSyB2rgaCdaipMd_KrgdRrIohbUW1e3eKaYk';
 const GEMINI_API_KEY = "AIzaSyCYvnoIz4UqaII-VvJp64J7vs5zP6-LpSQ"; // Replace with your actual API key
+const PLACE_API_KEY = "AIzaSyAS0Teq6DMYc2ivC1H2zMxePY-5jn6eBto";
 const GET_QUERY_SYSTEM_INSTRUCTION = `# field
 - type: according ## type select one 
 - languageCode: according to user input and find one on ## languageCode 
@@ -321,7 +322,6 @@ PRICE_LEVEL_EXPENSIVE\tPlace provides expensive services.
 PRICE_LEVEL_VERY_EXPENSIVE\tPlace provides very expensive services.
 `;
 
-console.log(GET_QUERY_SYSTEM_INSTRUCTION)
 ```
 
 ### index.js
@@ -340,18 +340,73 @@ async function sendQuery() {
   try {
     const result = await callGeminiAPI(prompt, systemInstruction, "application/json");
     console.log(result)
-    displayResult(result);
+
+    let r= JSON.parse(result)
+    console.log(r)
+
+    displayQuery(r);
+    await getPlaceAPI(r, location); // Call the getPlaceAPI function with the result and location
   } catch (error) {
     console.error('Error calling Gemini API:', error);
     alert('Failed to retrieve data from Gemini API.');
   }
 }
 
-function displayResult(resultText) {
-  const outputDiv = document.getElementById('result');
-  outputDiv.innerHTML = `<pre>${resultText}</pre>`;
+async function getPlaceAPI(result, location) {
+  console.log(result.type)
+  console.log(location)
+   
+  const apiKey = PLACE_API_KEY; // Replace with your actual API key
+  const url = 'https://places.googleapis.com/v1/places:searchText';
+  const [latitude, longitude] = location.split(',').map(Number);
+
+  const data = {
+    textQuery: result.keyword,
+    priceLevels: result.priceLevel,
+    includedType: result.type,
+    languageCode: result.languageCode,
+    locationBias: {
+      circle: {
+        center: { latitude, longitude },
+        radius: 500.0
+      }
+    }
+  };
+  console.log(data)
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log(responseData);
+    displayPlace(responseData);
+  } catch (error) {
+    console.error('Error calling Places API:', error);
+    alert('Failed to retrieve data from Places API.');
+  }
 }
 
+function displayQuery(resultText) {
+  const outputDiv = document.getElementById('queryBox');
+  outputDiv.innerHTML = `<pre>${JSON.stringify(resultText, null, 2)}</pre>`;
+}
+
+function displayPlace(resultText) {
+  const outputDiv = document.getElementById('placeBox');
+  outputDiv.innerHTML = `<pre>${JSON.stringify(resultText, null, 2)}</pre>`;
+}
 window.onload = function() {
   loadScript(`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}`, initMap);
 };
@@ -434,8 +489,10 @@ async function callGeminiAPI(prompt, systemInstruction ,responseMimeType ="text/
     <input type="text" id="prompt" placeholder="Enter prompt" value="親子家庭尋找有養小動物的平價餐廳">
 
     <button onclick="sendQuery()">Send Query</button>
-    <div id="result"></div>
+    <div id="queryBox"></div>
+    <div id="placeBox"></div>
     <script src="config.js"></script>
+    <script src="place.js"></script>
     <script src="index.js"></script>
     <script src="map.js"></script>
     <script src="gemini.js"></script>

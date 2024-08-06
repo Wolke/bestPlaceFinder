@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Google Maps JavaScript API</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-  </head>
-  <body>
-    <h1>Google Map Example</h1>
-    <div id="map"></div>
-    <label for="location">Show Location:</label>
-    <input type="text" id="location" placeholder="Enter location">
-    <br />
-    <input type="text" id="prompt" placeholder="Enter prompt" value="親子家庭尋找有養小動物的平價餐廳">
+<head>
+  <title>Google Maps JavaScript API</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <h1>Google Map Example</h1>
+  <div id="map"></div>
+  <label for="location">Show Location:</label>
+  <input type="text" id="location" placeholder="Enter location">
+  <br />
+  <input type="text" id="prompt" placeholder="Enter prompt" value="親子家庭尋找有養小動物的平價餐廳">
 
-    <button onclick="sendQuery()">Send Query</button>
-    <div id="queryBox"></div>
-    <div id="placeBox"></div>
-    <script src="config.js"></script>
-    <script src="index.js"></script>
-    <script src="map.js"></script>
-    <script src="gemini.js"></script>
-  </body>
+  <button onclick="sendQuery()">Send Query</button>
+  <div id="queryBox"></div>
+  <div id="placeBox"></div>
+  <script src="config.js"></script>
+  <script src="place.js"></script>
+  <script src="index.js"></script>
+  <script src="map.js"></script>
+  <script src="gemini.js"></script>
+</body>
 </html>
