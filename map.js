@@ -4,11 +4,11 @@ var marker;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 8
+    center: { lat: 25.014633993137636, lng: 121.47865651711459 },
+    zoom: 12
   });
 
-  map.addListener('click', function(event) {
+  map.addListener('click', function (event) {
     placeMarker(event.latLng);
   });
 }
@@ -29,14 +29,14 @@ function loadScript(url, callback) {
   var script = document.createElement('script');
   script.type = 'text/javascript';
   if (script.readyState) {  // only required for IE <9
-    script.onreadystatechange = function() {
+    script.onreadystatechange = function () {
       if (script.readyState == 'loaded' || script.readyState == 'complete') {
         script.onreadystatechange = null;
         callback();
       }
     };
   } else {  //Others
-    script.onload = function() {
+    script.onload = function () {
       callback();
     };
   }
