@@ -1,6 +1,7 @@
 // config.js
 const GOOGLE_MAPS_API_KEY = 'AIzaSyB2rgaCdaipMd_KrgdRrIohbUW1e3eKaYk';
 const GEMINI_API_KEY = "AIzaSyCYvnoIz4UqaII-VvJp64J7vs5zP6-LpSQ"; // Replace with your actual API key
+const PLACE_API_KEY = "AIzaSyAS0Teq6DMYc2ivC1H2zMxePY-5jn6eBto";
 const GET_QUERY_SYSTEM_INSTRUCTION = `# field
 - type: according ## type select one 
 - languageCode: according to user input and find one on ## languageCode 
@@ -268,5 +269,3 @@ PRICE_LEVEL_MODERATE\tPlace provides moderately priced services.
 PRICE_LEVEL_EXPENSIVE\tPlace provides expensive services.
 PRICE_LEVEL_VERY_EXPENSIVE\tPlace provides very expensive services.
 `;
-
-console.log(GET_QUERY_SYSTEM_INSTRUCTION)
