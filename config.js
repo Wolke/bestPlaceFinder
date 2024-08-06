@@ -269,3 +269,12 @@ PRICE_LEVEL_MODERATE\tPlace provides moderately priced services.
 PRICE_LEVEL_EXPENSIVE\tPlace provides expensive services.
 PRICE_LEVEL_VERY_EXPENSIVE\tPlace provides very expensive services.
 `;
+
+const GET_SCORE_SYSTEM_INSTRUCTION = `# field
+- score: according  ## score to make points
+- reason: Based on # conditions, evaluate # reviews and write down the reasons for the degree of achievement.
+ex: {"score": "7", "reason": "餐點口味不錯，環境舒適，適合親子家庭，但泰式奶茶口味不佳，停車不方便。"}
+
+## score
+Based on # conditions, evaluate # reviews  for the degree of achievement to make from 1 to 10 consider the necessary item of conditions are not met, at least two points will be deducted for each item.
+`;
