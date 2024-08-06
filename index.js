@@ -1,4 +1,3 @@
-// index.js
 async function sendQuery() {
   var location = document.getElementById('location').value;
   var prompt = document.getElementById('prompt').value;
@@ -25,7 +24,19 @@ async function sendQuery() {
       const combinedReviews = place.reviews.map(review => review.text.text).join(' ');
       const summary = await callGeminiAPI(`# conditions ${r["conditions"]} # reviews ${combinedReviews}`, GET_SCORE_SYSTEM_INSTRUCTION, "application/json");
       place.summary = summary;
-      updatePlaceSummary(index, summary); // Update the summary in the HTML
+
+      // Parse the summary to get the score
+      const summaryData = JSON.parse(summary);
+      place.score = parseFloat(summaryData.score);
+
+      // Update the summary in the HTML
+      updatePlaceSummary(index, summary);
+
+      // Sort the places by score
+      placeResponse.places.sort((a, b) => b.score - a.score);
+
+      // Redisplay the places in sorted order
+      displayPlace(placeResponse);
     }
 
   } catch (error) {
@@ -38,14 +49,13 @@ function displayQuery(resultText) {
   const outputDiv = document.getElementById('queryBox');
   outputDiv.innerHTML = `<pre>${JSON.stringify(resultText, null, 2)}</pre>`;
 }
-
 function displayPlace(responseData) {
   const outputDiv = document.getElementById('placeBox');
   const places = responseData.places.map((place, index) => `
     <div class="place" id="place-${index}">
       <h3>${place.displayName.text}</h3>
       <p>${place.formattedAddress}</p>
-      <p><strong>Summary:</strong> <span id="summary-${index}">Loading summary...</span></p>
+      <p><strong>Summary:</strong> <span id="summary-${index}">${place.summary ? place.summary : 'Loading summary...'}</span></p>
       <button onclick="toggleReviews(${index})">Show/Hide Reviews</button>
       <div class="reviews" id="reviews-${index}" style="display: none;">
         ${place.reviews.map(review => `
@@ -64,7 +74,16 @@ function displayPlace(responseData) {
 function updatePlaceSummary(index, summary) {
   const summaryElement = document.getElementById(`summary-${index}`);
   if (summaryElement) {
-    summaryElement.textContent = summary;
+    try {
+      const summaryData = JSON.parse(summary);
+      summaryElement.innerHTML = `
+        <p><strong>Score:</strong> ${summaryData.score}</p>
+        <p><strong>Reason:</strong> ${summaryData.reason}</p>
+      `;
+    } catch (error) {
+      console.error('Error parsing summary JSON:', error);
+      summaryElement.textContent = 'Error loading summary';
+    }
   }
 }
 

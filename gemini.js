@@ -18,7 +18,7 @@ class QueueManager {
     while (this.queue.length > 0) {
       const task = this.queue.shift();
       await task();
-      await this.delay(2000); // Wait for 2 seconds between tasks
+      await this.delay(3000); // Wait for 2 seconds between tasks
     }
 
     this.processing = false;
