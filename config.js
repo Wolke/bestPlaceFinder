@@ -6,7 +6,7 @@ const GET_QUERY_SYSTEM_INSTRUCTION = `# field
 - type: according ## type select one 
 - languageCode: according to user input and find one on ## languageCode 
 - priceLevel: according ## priceLevel choose one or two
-- keyword: according to user input
+- keyword: according to user input but do not show the same as field.type
 - conditions: Based on user input, come up with five requirements that they value most.
 ex:
 {
