@@ -10,13 +10,28 @@ async function sendQuery() {
 
   try {
     const result = await callGeminiAPI(prompt, systemInstruction, "application/json");
-    console.log(result);
-
+    
     let r = JSON.parse(result);
-    console.log(r);
-
     displayQuery(r);
-    const placeResponse = await getPlaceAPI(r, location); // Call the getPlaceAPI function with the result and location
+ 
+    const [latitude, longitude] = location.split(',').map(Number);
+
+    const data = {
+      textQuery: r.keyword,
+      priceLevels: r.priceLevel,
+      includedType: r.type,
+      languageCode: r.languageCode,
+      locationBias: {
+        circle: {
+          center: { latitude, longitude },
+          radius: 500.0
+        }
+      }
+    };
+    
+    displayQuery(data);
+ 
+    const placeResponse = await getPlaceAPI(data); // Call the getPlaceAPI function with the result and location
     displayPlace(placeResponse); // Display the place data without summaries
 
     // Combine each place's reviews and summarize them
@@ -30,32 +45,35 @@ async function sendQuery() {
       place.score = parseFloat(summaryData.score);
 
       // Update the summary in the HTML
-      updatePlaceSummary(index, summary);
-
+      // updatePlaceSummary(index, summary);
       // Sort the places by score
-      placeResponse.places.sort((a, b) => b.score - a.score);
+    placeResponse.places.sort((a, b) => b.score - a.score);
 
-      // Redisplay the places in sorted order
-      displayPlace(placeResponse);
+    // Redisplay the places in sorted order
+    displayPlace(placeResponse);
+
     }
 
+    
   } catch (error) {
     console.error('Error calling Gemini API:', error);
-    alert('Failed to retrieve data from Gemini API.');
+    // alert('Failed to retrieve data from Gemini API.');
   }
 }
 
+
 function displayQuery(resultText) {
   const outputDiv = document.getElementById('queryBox');
-  outputDiv.innerHTML = `<pre>${JSON.stringify(resultText, null, 2)}</pre>`;
+  outputDiv.innerHTML = outputDiv.innerHTML + `<pre>${JSON.stringify(resultText, null, 2)}</pre>`;
 }
 function displayPlace(responseData) {
   const outputDiv = document.getElementById('placeBox');
+  const placeCount = responseData.places.length;
   const places = responseData.places.map((place, index) => `
     <div class="place" id="place-${index}">
-      <h3>${place.displayName.text}</h3>
+      <h3><a href="${place.googleMapsUri}" target="_blank">${place.displayName.text}</a></h3>
       <p>${place.formattedAddress}</p>
-      <p><strong>Summary:</strong> <span id="summary-${index}">${place.summary ? place.summary : 'Loading summary...'}</span></p>
+      <p><strong>Summary:</strong> <span id="summary-${index}">${place.summary ? formatSummary(place.summary) : 'Loading summary...'}</span></p>
       <button onclick="toggleReviews(${index})">Show/Hide Reviews</button>
       <div class="reviews" id="reviews-${index}" style="display: none;">
         ${place.reviews.map(review => `
@@ -68,24 +86,27 @@ function displayPlace(responseData) {
       </div>
     </div>
   `).join('');
-  outputDiv.innerHTML = places;
+  outputDiv.innerHTML = `<p>Total places found: ${placeCount}</p>` + places;
 }
 
-function updatePlaceSummary(index, summary) {
-  const summaryElement = document.getElementById(`summary-${index}`);
-  if (summaryElement) {
-    try {
-      const summaryData = JSON.parse(summary);
-      summaryElement.innerHTML = `
-        <p><strong>Score:</strong> ${summaryData.score}</p>
-        <p><strong>Reason:</strong> ${summaryData.reason}</p>
-      `;
-    } catch (error) {
-      console.error('Error parsing summary JSON:', error);
-      summaryElement.textContent = 'Error loading summary';
-    }
-  }
+
+function formatSummary(summary) {
+  const summaryObj = JSON.parse(summary);
+  return `
+    Score: ${summaryObj.score} <br>
+    Reason: ${summaryObj.reason.replace(/，/g, ', ')}
+  `;
 }
+
+
+function formatSummary(summary) {
+  const summaryObj = JSON.parse(summary);
+  return `
+    Score: ${summaryObj.score} <br>
+    Reason: ${summaryObj.reason.replace(/，/g, ', ')}
+  `;
+}
+
 
 function toggleReviews(index) {
   const reviewsDiv = document.getElementById(`reviews-${index}`);

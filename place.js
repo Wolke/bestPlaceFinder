@@ -1,35 +1,20 @@
 // place.js
-async function getPlaceAPI(result, location) {
-  console.log(result.type);
-  console.log(location);
+async function getPlaceAPI(query) {
+  // console.log(result.type);
+  // console.log(location);
 
   const apiKey = PLACE_API_KEY; // Replace with your actual API key
   const url = 'https://places.googleapis.com/v1/places:searchText';
-  const [latitude, longitude] = location.split(',').map(Number);
-
-  const data = {
-    textQuery: result.keyword,
-    priceLevels: result.priceLevel,
-    includedType: result.type,
-    languageCode: result.languageCode,
-    locationBias: {
-      circle: {
-        center: { latitude, longitude },
-        radius: 500.0
-      }
-    }
-  };
-  console.log(data);
-
+  
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.reviews'
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.reviews,places.googleMapsUri'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(query)
     });
 
     if (!response.ok) {

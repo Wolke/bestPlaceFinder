@@ -66,6 +66,7 @@ async function callGeminiAPI(prompt, systemInstruction, responseMimeType = "text
   return new Promise((resolve, reject) => {
     queueManager.enqueue(async () => {
       try {
+        console.log("call gemini")
         const response = await fetch(url, {
           method: 'POST',
           headers: {
@@ -80,6 +81,8 @@ async function callGeminiAPI(prompt, systemInstruction, responseMimeType = "text
 
         const result = await response.json();
         const text = result.candidates[0].content.parts[0].text;
+        console.log("get result:"+ text)
+        
         resolve(text);
       } catch (error) {
         reject(error);
