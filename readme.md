@@ -22,26 +22,26 @@ The Best Place Finder is a web application that integrates Google Maps, Gemini A
 
 1. Clone the repository:
 
-   \`\`\`bash
+```bash
    git clone https://github.com/yourusername/the-best-place-finder.git
    cd the-best-place-finder
-   \`\`\`
+```
 
 2. Replace the placeholder API keys in \`config.js\` with your actual API keys:
 
-   \`\`\`js
+```js
    // config.js
    const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
    const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY';
    const PLACE_API_KEY = 'YOUR_PLACE_API_KEY';
-   \`\`\`
+```
 
 3. Open \`index.html\` in your web browser or serve it using a web server:
 
-   \`\`\`bash
+``` bash
    python3 -m http.server 8000
    # Open http://localhost:8000 in your web browser
-   \`\`\`
+```
 
 ## Usage
 
